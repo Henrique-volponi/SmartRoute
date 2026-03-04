@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { fetchStudents } from '../services/students'
+import {
+  createStudent,
+  deleteStudent,
+  fetchStudents,
+  CreateStudentPayload,
+} from '../services/students'
 import { generateRoute } from '../services/routes'
 import { RouteKind, RouteResponse, StopPoint } from '../types/route'
 import { Student } from '../types/student'
@@ -10,8 +15,12 @@ interface UseRoutePlannerResult {
   route?: RouteResponse
   routeLoading: boolean
   orderedStops: StopPoint[]
+  studentSaving: boolean
+  studentDeletingId: string | null
   loadStudents: () => Promise<void>
   requestRoute: (type: RouteKind) => Promise<void>
+  addStudent: (payload: CreateStudentPayload) => Promise<void>
+  removeStudent: (id: string) => Promise<void>
 }
 
 export function useRoutePlanner(): UseRoutePlannerResult {
@@ -19,6 +28,8 @@ export function useRoutePlanner(): UseRoutePlannerResult {
   const [studentsLoading, setStudentsLoading] = useState(false)
   const [route, setRoute] = useState<RouteResponse | undefined>(undefined)
   const [routeLoading, setRouteLoading] = useState(false)
+  const [studentSaving, setStudentSaving] = useState(false)
+  const [studentDeletingId, setStudentDeletingId] = useState<string | null>(null)
 
   const loadStudents = useCallback(async () => {
     setStudentsLoading(true)
@@ -43,6 +54,40 @@ export function useRoutePlanner(): UseRoutePlannerResult {
       setRouteLoading(false)
     }
   }, [])
+
+  const addStudent = useCallback(
+    async (payload: CreateStudentPayload) => {
+      setStudentSaving(true)
+      try {
+        await createStudent(payload)
+        await loadStudents()
+        setRoute(undefined)
+      } catch (err) {
+        console.error('Erro ao criar estudante', err)
+        throw err
+      } finally {
+        setStudentSaving(false)
+      }
+    },
+    [loadStudents]
+  )
+
+  const removeStudent = useCallback(
+    async (id: string) => {
+      setStudentDeletingId(id)
+      try {
+        await deleteStudent(id)
+        await loadStudents()
+        setRoute(undefined)
+      } catch (err) {
+        console.error('Erro ao remover estudante', err)
+        throw err
+      } finally {
+        setStudentDeletingId(null)
+      }
+    },
+    [loadStudents]
+  )
 
   useEffect(() => {
     loadStudents()
@@ -101,7 +146,11 @@ export function useRoutePlanner(): UseRoutePlannerResult {
     route,
     routeLoading,
     orderedStops,
+    studentSaving,
+    studentDeletingId,
     loadStudents,
     requestRoute,
+    addStudent,
+    removeStudent,
   }
 }
