@@ -24,6 +24,15 @@ export class RoutesService {
       throw new BadRequestException('Estudantes não vinculados a uma universidade.')
     }
 
+    const hasMixedOrMissingUniversities = students.some(
+      student => !student.university || student.university.id !== university.id
+    )
+    if (hasMixedOrMissingUniversities) {
+      throw new BadRequestException(
+        'Não é possível otimizar rota com estudantes de universidades diferentes.'
+      )
+    }
+
     const studentCoords = students.map(
       student => [student.longitude, student.latitude] as [number, number]
     )
