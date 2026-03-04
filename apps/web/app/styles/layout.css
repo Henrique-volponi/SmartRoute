@@ -1,0 +1,9 @@
+.layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  min-height: 100vh;
+}
+
+.content {
+  position: relative;
+}
