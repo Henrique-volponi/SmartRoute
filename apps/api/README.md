@@ -47,6 +47,6 @@ A API sobe em `http://localhost:3000`.
 
 ## Dicas
 
-- O `ValidationPipe` está com `whitelist=true`, então campos extras são ignorados e campos obrigatórios ausentes geram 400.
+- O `ValidationPipe` está com `whitelist=true` e `forbidNonWhitelisted=true`, então campos extras e campos obrigatórios ausentes geram 400.
 - Se mudar o schema Prisma, rode `pnpm prisma:generate` para atualizar os tipos do client.
 - Para um sanity check rápido: `pnpm tsc --noEmit` em `apps/api`.
