@@ -20,6 +20,8 @@ interface Props {
 }
 
 export function RouteSummary({ route, orderedStops }: Props) {
+  const hasStops = orderedStops.length > 0
+
   return (
     <div className="summary-card">
       <div>
@@ -33,7 +35,7 @@ export function RouteSummary({ route, orderedStops }: Props) {
       <div>
         <strong>Paradas</strong>
         <div className="order-list">
-          {orderedStops.length ? (
+          {hasStops ? (
             orderedStops.map(stop => (
               <span
                 className="order-pill"
