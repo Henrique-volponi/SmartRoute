@@ -3,7 +3,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'SmartRoute Web',
-  description: 'Visualize e gera rotas otimizadas',
+  description: 'Visualize e gere rotas otimizadas',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
