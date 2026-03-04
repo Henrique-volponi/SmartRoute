@@ -37,27 +37,40 @@ interface Props {
 export function MapView({ geometry, stops }: Props) {
   const mapRef = useRef<Map | null>(null)
   const [leaflet, setLeaflet] = useState<typeof import('leaflet') | null>(null)
+  const defaultCenter: [number, number] = [-23.5614, -46.6558]
 
   useEffect(() => {
     import('leaflet').then(mod => setLeaflet(mod))
   }, [])
 
-  const bounds = useMemo(() => {
-    if (!leaflet) return undefined
+  const { bounds, center } = useMemo(() => {
+    if (!leaflet) return { bounds: undefined, center: defaultCenter }
+
+    let nextBounds: import('leaflet').LatLngBounds | undefined
 
     if (geometry) {
       const layer = leaflet.geoJSON(geometry as any)
       const gBounds = layer.getBounds()
-      if (gBounds.isValid()) return gBounds
+      if (gBounds.isValid()) nextBounds = gBounds
+    }
+
+    if (!nextBounds && stops.length) {
+      const b = leaflet.latLngBounds(stops.map(s => [s.lat, s.lng]))
+      if (b.isValid()) nextBounds = b
+    }
+
+    if (nextBounds) {
+      const c = nextBounds.getCenter()
+      return { bounds: nextBounds, center: [c.lat, c.lng] as [number, number] }
     }
 
     if (stops.length) {
-      const b = leaflet.latLngBounds(stops.map(s => [s.lat, s.lng]))
-      if (b.isValid()) return b
+      const first = stops[0]
+      return { bounds: undefined, center: [first.lat, first.lng] as [number, number] }
     }
 
-    return undefined
-  }, [geometry, stops, leaflet])
+    return { bounds: undefined, center: defaultCenter }
+  }, [geometry, stops, leaflet, defaultCenter])
 
   useEffect(() => {
     if (mapRef.current && bounds) {
@@ -110,7 +123,7 @@ export function MapView({ geometry, stops }: Props) {
             mapRef.current = instance
           }}
           style={{ height: '100%', width: '100%' }}
-          center={[-23.5614, -46.6558]}
+          center={center}
           zoom={13}
           scrollWheelZoom
         >
