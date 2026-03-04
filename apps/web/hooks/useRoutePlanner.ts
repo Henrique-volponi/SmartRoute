@@ -1,0 +1,107 @@
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { fetchStudents } from '../services/students'
+import { generateRoute } from '../services/routes'
+import { RouteKind, RouteResponse, StopPoint } from '../types/route'
+import { Student } from '../types/student'
+
+interface UseRoutePlannerResult {
+  students: Student[]
+  studentsLoading: boolean
+  route?: RouteResponse
+  routeLoading: boolean
+  orderedStops: StopPoint[]
+  loadStudents: () => Promise<void>
+  requestRoute: (type: RouteKind) => Promise<void>
+}
+
+export function useRoutePlanner(): UseRoutePlannerResult {
+  const [students, setStudents] = useState<Student[]>([])
+  const [studentsLoading, setStudentsLoading] = useState(false)
+  const [route, setRoute] = useState<RouteResponse | undefined>(undefined)
+  const [routeLoading, setRouteLoading] = useState(false)
+
+  const loadStudents = useCallback(async () => {
+    setStudentsLoading(true)
+    try {
+      const list = await fetchStudents()
+      setStudents(list)
+    } catch (err) {
+      console.error('Erro ao buscar estudantes', err)
+    } finally {
+      setStudentsLoading(false)
+    }
+  }, [])
+
+  const requestRoute = useCallback(async (type: RouteKind) => {
+    setRouteLoading(true)
+    try {
+      const result = await generateRoute(type)
+      setRoute(result)
+    } catch (err) {
+      console.error('Erro ao gerar rota', err)
+    } finally {
+      setRouteLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadStudents()
+  }, [loadStudents])
+
+  const orderedStops = useMemo<StopPoint[]>(() => {
+    if (!students.length) return []
+
+    const baseStops: StopPoint[] = []
+
+    const firstStudent = students[0]
+    const university = firstStudent?.university
+
+    const addUniversity = () => {
+      if (!university) return
+      baseStops.push({
+        label: university.name,
+        lat: university.latitude,
+        lng: university.longitude,
+        kind: 'university',
+      })
+    }
+
+    const addStudents = () => {
+      students.forEach(s => {
+        baseStops.push({
+          label: s.name,
+          lat: s.latitude,
+          lng: s.longitude,
+          kind: 'student',
+        })
+      })
+    }
+
+    if (route?.type === 'IDA') {
+      addStudents()
+      addUniversity()
+    } else {
+      addUniversity()
+      addStudents()
+    }
+
+    if (!route?.optimizedOrder?.length) return baseStops
+
+    return route.optimizedOrder.reduce<StopPoint[]>((acc, idx, order) => {
+      const stop = baseStops[idx]
+      if (!stop) return acc
+      acc.push({ ...stop, order: order + 1 })
+      return acc
+    }, [])
+  }, [route, students])
+
+  return {
+    students,
+    studentsLoading,
+    route,
+    routeLoading,
+    orderedStops,
+    loadStudents,
+    requestRoute,
+  }
+}
