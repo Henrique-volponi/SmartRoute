@@ -16,4 +16,8 @@ export class StudentsService {
       orderBy: { name: 'asc' },
     })
   }
+
+  removeAll() {
+    return this.prisma.student.deleteMany({})
+  }
 }

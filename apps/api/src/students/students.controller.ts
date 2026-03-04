@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Post } from '@nestjs/common'
 import { StudentsService } from './students.service'
 import { CreateStudentDto } from './dto/create-student.dto'
 
@@ -14,5 +14,10 @@ export class StudentsController {
   @Get()
   findAll() {
     return this.studentsService.findAll()
+  }
+
+  @Delete()
+  removeAll() {
+    return this.studentsService.removeAll()
   }
 }

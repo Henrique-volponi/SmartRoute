@@ -24,14 +24,20 @@ export class RoutesService {
       throw new BadRequestException('Estudantes não vinculados a uma universidade.')
     }
 
-    const coordinates: Array<[number, number]> = [
-      [university.longitude, university.latitude],
-      ...students.map(
-        student => [student.longitude, student.latitude] as [number, number]
-      ),
-    ]
+    const studentCoords = students.map(
+      student => [student.longitude, student.latitude] as [number, number]
+    )
 
-    const optimized = await this.optimization.optimizeTrip(coordinates)
+    const isIda = dto.type === RouteType.IDA
+
+    const coordinates: Array<[number, number]> = isIda
+      ? [...studentCoords, [university.longitude, university.latitude]]
+      : [[university.longitude, university.latitude], ...studentCoords]
+
+    const optimized = await this.optimization.optimizeTrip(coordinates, {
+      source: isIda ? 'any' : 'first',
+      destination: isIda ? 'last' : 'any',
+    })
 
     const routeRecord = await this.prisma.route.create({
       data: {

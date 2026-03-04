@@ -8,17 +8,32 @@ export interface OptimizedRouteResult {
   geometry: unknown
 }
 
+interface OptimizeOptions {
+  source?: 'any' | 'first' | 'last'
+  destination?: 'any' | 'first' | 'last'
+}
+
 @Injectable()
 export class OptimizationService {
-  async optimizeTrip(coordinates: Array<[number, number]>) {
+  async optimizeTrip(
+    coordinates: Array<[number, number]>,
+    options: OptimizeOptions = {}
+  ) {
     if (coordinates.length < 2) {
       throw new Error('Ao menos dois pontos são necessários para otimização.')
     }
 
     const coordsParam = coordinates.map(([lon, lat]) => `${lon},${lat}`).join(';')
-    const url =
-      `http://router.project-osrm.org/trip/v1/driving/${coordsParam}` +
-      '?source=first&roundtrip=false&overview=full&geometries=geojson'
+    const params = new URLSearchParams({
+      roundtrip: 'false',
+      overview: 'full',
+      geometries: 'geojson',
+    })
+
+    if (options.source) params.set('source', options.source)
+    if (options.destination) params.set('destination', options.destination)
+
+    const url = `http://router.project-osrm.org/trip/v1/driving/${coordsParam}?${params.toString()}`
 
     const { data } = await axios.get(url)
 
