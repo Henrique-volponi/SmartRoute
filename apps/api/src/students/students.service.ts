@@ -17,6 +17,10 @@ export class StudentsService {
     })
   }
 
+  removeOne(id: string) {
+    return this.prisma.student.delete({ where: { id } })
+  }
+
   removeAll() {
     return this.prisma.student.deleteMany({})
   }

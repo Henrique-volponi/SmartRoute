@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Post, ForbiddenException } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  ForbiddenException,
+} from '@nestjs/common'
 import { StudentsService } from './students.service'
 import { CreateStudentDto } from './dto/create-student.dto'
 
@@ -14,6 +23,11 @@ export class StudentsController {
   @Get()
   findAll() {
     return this.studentsService.findAll()
+  }
+
+  @Delete(':id')
+  removeOne(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.studentsService.removeOne(id)
   }
 
   @Delete()
