@@ -6,7 +6,7 @@ Guia rápido para subir o frontend localmente, na mesma linha do README da API.
 
 - Node.js 18+
 - pnpm (monorepo já usa pnpm)
-- API rodando e acessível (por padrão espera `http://localhost:3000` ou defina a variável abaixo)
+- API rodando e acessível (defina `NEXT_PUBLIC_API_URL`; sem variável o front usa `http://localhost:3001` por padrão)
 
 ## Configuração
 
@@ -16,13 +16,13 @@ Guia rápido para subir o frontend localmente, na mesma linha do README da API.
 pnpm install
 ```
 
-2. Exponha a URL da API (arquivo `apps/web/.env.local`):
+2. Defina a URL da API (arquivo `apps/web/.env.local`):
 
 ```env
 NEXT_PUBLIC_API_URL="http://localhost:3000"
 ```
 
-> Se não definir, o front tenta `http://localhost:3001` por padrão.
+> Se não definir, o front tenta `http://localhost:3001` por padrão (fallback em `services/api.ts`).
 
 ## Rodando
 
