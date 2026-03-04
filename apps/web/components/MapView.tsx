@@ -69,27 +69,16 @@ export function MapView({ geometry, stops }: Props) {
     if (!stops.length) return { startIdx: -1, endIdx: -1 }
 
     const ordered = stops
-      .map((stop, idx) => ({ idx, ord: stop.order }))
-      .filter(item => typeof item.ord === 'number' && Number.isFinite(item.ord as number))
+      .map((stop, idx) => ({ idx, order: stop.order }))
+      .filter(
+        item => typeof item.order === 'number' && Number.isFinite(item.order as number)
+      )
+      .sort((a, b) => (a.order as number) - (b.order as number))
 
     if (!ordered.length) return { startIdx: -1, endIdx: -1 }
 
-    let startIdx = ordered[0].idx
-    let endIdx = ordered[0].idx
-    let minOrder = ordered[0].ord as number
-    let maxOrder = ordered[0].ord as number
-
-    ordered.forEach(item => {
-      const ord = item.ord as number
-      if (ord < minOrder) {
-        minOrder = ord
-        startIdx = item.idx
-      }
-      if (ord > maxOrder) {
-        maxOrder = ord
-        endIdx = item.idx
-      }
-    })
+    const startIdx = ordered[0].idx
+    const endIdx = ordered[ordered.length - 1].idx
 
     return { startIdx, endIdx }
   }, [stops])
