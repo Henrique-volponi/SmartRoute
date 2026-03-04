@@ -1,0 +1,33 @@
+# Node / package managers
+node_modules/
+.pnpm-store/
+
+# Builds / outputs
+.dist/
+dist/
+build/
+.out/
+out/
+.next/
+.turbo/
+
+# Tests / coverage
+coverage/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
