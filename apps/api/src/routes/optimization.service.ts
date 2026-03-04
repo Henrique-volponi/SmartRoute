@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Injectable } from '@nestjs/common'
+import { BadGatewayException, Injectable, RequestTimeoutException } from '@nestjs/common'
 
 export interface OptimizedRouteResult {
   optimizedOrder: number[]
@@ -43,15 +43,22 @@ export class OptimizationService {
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
         if (error.code === 'ECONNABORTED') {
-          throw new Error('A requisição ao serviço OSRM excedeu o tempo limite.')
+          throw new RequestTimeoutException(
+            'A requisição ao serviço OSRM excedeu o tempo limite.'
+          )
         }
-        throw new Error('Não foi possível se comunicar com o serviço OSRM.')
+
+        const status = error.response?.status
+        const detail = status ? ` (status ${status})` : ''
+        throw new BadGatewayException(
+          `Não foi possível se comunicar com o serviço OSRM${detail}.`
+        )
       }
       throw error
     }
 
     if (data?.code !== 'Ok' || !data.trips?.length) {
-      throw new Error('Não foi possível otimizar a rota via OSRM.')
+      throw new BadGatewayException('Não foi possível otimizar a rota via OSRM.')
     }
 
     const trip = data.trips[0]
