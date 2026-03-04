@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Post, ForbiddenException } from '@nestjs/common'
 import { StudentsService } from './students.service'
 import { CreateStudentDto } from './dto/create-student.dto'
 
@@ -18,6 +18,11 @@ export class StudentsController {
 
   @Delete()
   removeAll() {
+    if (process.env.NODE_ENV === 'production') {
+      throw new ForbiddenException(
+        'Remoção em massa de estudantes desabilitada em produção.'
+      )
+    }
     return this.studentsService.removeAll()
   }
 }
