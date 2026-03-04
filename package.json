@@ -2,6 +2,7 @@
   "name": "smart-route-monorepo",
   "version": "0.0.0",
   "private": true,
+  "packageManager": "pnpm@8.15.0",
   "workspaces": [
     "apps/*",
     "packages/*"
