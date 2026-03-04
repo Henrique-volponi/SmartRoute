@@ -13,6 +13,7 @@ export class RoutesService {
   async generate(dto: GenerateRouteDto) {
     const students = await this.prisma.student.findMany({
       include: { university: true },
+      orderBy: { name: 'asc' },
     })
 
     if (!students.length) {
