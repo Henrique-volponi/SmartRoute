@@ -56,7 +56,26 @@ export class OptimizationService {
 
     const trip = data.trips[0]
 
-    const optimizedOrder = trip.waypoints?.map((wp: any) => wp.waypoint_index) ?? []
+    const waypoints = Array.isArray(data.waypoints)
+      ? data.waypoints
+      : Array.isArray(trip?.waypoints)
+        ? trip.waypoints
+        : []
+
+    const waypointPairs = waypoints.map((wp: any, inputIndex: number) => ({
+      inputIndex,
+      waypointIndex: wp?.waypoint_index as number | undefined,
+    }))
+
+    const optimizedOrder =
+      waypointPairs.length > 0
+        ? waypointPairs
+            .filter((item): item is { inputIndex: number; waypointIndex: number } =>
+              Number.isInteger(item.waypointIndex)
+            )
+            .sort((a, b) => a.waypointIndex - b.waypointIndex)
+            .map(item => item.inputIndex)
+        : []
 
     const result: OptimizedRouteResult = {
       optimizedOrder,
