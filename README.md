@@ -35,19 +35,6 @@ Tudo considerando:
 
 ---
 
-## 🧠 Como Funciona
-
-1. Endereços são convertidos em coordenadas geográficas (latitude/longitude)
-2. O sistema envia os pontos para um motor de roteirização
-3. A melhor ordem de paradas é calculada automaticamente
-4. O sistema retorna:
-   - Sequência otimizada
-   - Distância total
-   - Tempo estimado
-   - Linha da rota para visualização no mapa
-
----
-
 ## 🗺️ Tecnologias Utilizadas
 
 ### Frontend
@@ -99,16 +86,6 @@ Inspirado em um cenário real de transporte universitário intermunicipal entre:
 - Belo Horizonte – MG  
 
 Atendendo múltiplos alunos e múltiplas instituições de ensino em uma única rota.
-
----
-
-## 📈 Futuras Melhorias
-
-- Comparação entre rota aleatória vs rota otimizada
-- Cálculo de economia estimada de combustível
-- Dashboard para múltiplas vans
-- Simulação de trânsito
-- Autenticação de motoristas
 
 ---
 
