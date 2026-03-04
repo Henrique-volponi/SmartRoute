@@ -33,9 +33,22 @@ export class OptimizationService {
     if (options.source) params.set('source', options.source)
     if (options.destination) params.set('destination', options.destination)
 
-    const url = `http://router.project-osrm.org/trip/v1/driving/${coordsParam}?${params.toString()}`
+    const osrmBaseUrl = process.env.OSRM_BASE_URL || 'https://router.project-osrm.org'
+    const url = `${osrmBaseUrl}/trip/v1/driving/${coordsParam}?${params.toString()}`
 
-    const { data } = await axios.get(url)
+    let data: any
+    try {
+      const response = await axios.get(url, { timeout: 10_000 })
+      data = response.data
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        if (error.code === 'ECONNABORTED') {
+          throw new Error('A requisição ao serviço OSRM excedeu o tempo limite.')
+        }
+        throw new Error('Não foi possível se comunicar com o serviço OSRM.')
+      }
+      throw error
+    }
 
     if (data?.code !== 'Ok' || !data.trips?.length) {
       throw new Error('Não foi possível otimizar a rota via OSRM.')
