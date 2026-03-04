@@ -57,7 +57,7 @@ export function MapView({ geometry, stops }: Props) {
     }
 
     return undefined
-  }, [geometry, stops])
+  }, [geometry, stops, leaflet])
 
   useEffect(() => {
     if (mapRef.current && bounds) {
