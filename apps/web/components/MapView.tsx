@@ -68,20 +68,26 @@ export function MapView({ geometry, stops }: Props) {
   const { startIdx, endIdx } = useMemo(() => {
     if (!stops.length) return { startIdx: -1, endIdx: -1 }
 
-    let startIdx = 0
-    let endIdx = 0
-    let minOrder = Number.POSITIVE_INFINITY
-    let maxOrder = Number.NEGATIVE_INFINITY
+    const ordered = stops
+      .map((stop, idx) => ({ idx, ord: stop.order }))
+      .filter(item => typeof item.ord === 'number' && Number.isFinite(item.ord as number))
 
-    stops.forEach((stop, idx) => {
-      const ord = stop.order ?? idx + 1
+    if (!ordered.length) return { startIdx: -1, endIdx: -1 }
+
+    let startIdx = ordered[0].idx
+    let endIdx = ordered[0].idx
+    let minOrder = ordered[0].ord as number
+    let maxOrder = ordered[0].ord as number
+
+    ordered.forEach(item => {
+      const ord = item.ord as number
       if (ord < minOrder) {
         minOrder = ord
-        startIdx = idx
+        startIdx = item.idx
       }
       if (ord > maxOrder) {
         maxOrder = ord
-        endIdx = idx
+        endIdx = item.idx
       }
     })
 
