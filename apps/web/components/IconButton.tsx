@@ -13,17 +13,19 @@ export function IconButton({
   loading = false,
   children,
   disabled,
+  className,
   ...props
 }: IconButtonProps) {
   const isDisabled = disabled || loading
+  const mergedClassName = `icon-button${variant === 'danger' ? ' danger' : ''}${className ? ` ${className}` : ''}`
   return (
     <button
+      {...props}
       type="button"
-      className={`icon-button${variant === 'danger' ? ' danger' : ''}`}
+      className={mergedClassName}
       aria-label={label}
       title={label}
       disabled={isDisabled}
-      {...props}
     >
       {loading ? '...' : children}
     </button>
