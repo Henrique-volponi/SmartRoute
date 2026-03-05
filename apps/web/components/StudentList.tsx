@@ -6,19 +6,20 @@ interface Props {
   loading?: boolean
   onDelete?: (id: string) => Promise<void>
   deletingId?: string | null
+  error?: string | null
 }
 
-export function StudentList({ students, loading, onDelete, deletingId }: Props) {
+export function StudentList({ students, loading, onDelete, deletingId, error }: Props) {
   if (loading) {
     return <p className="muted">Carregando alunos…</p>
   }
 
-  if (!students.length) {
-    return <p className="muted">Nenhum aluno cadastrado.</p>
-  }
-
   return (
     <div className="list">
+      {error ? <div className="error-text">{error}</div> : null}
+
+      {!students.length ? <p className="muted">Nenhum aluno cadastrado.</p> : null}
+
       {students.map(student => (
         <div className="list-item" key={student.id}>
           <div className="list-item-row">

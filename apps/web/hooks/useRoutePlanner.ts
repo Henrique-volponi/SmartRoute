@@ -17,6 +17,7 @@ interface UseRoutePlannerResult {
   orderedStops: StopPoint[]
   studentSaving: boolean
   studentDeletingId: string | null
+  studentError: string | null
   loadStudents: () => Promise<void>
   requestRoute: (type: RouteKind) => Promise<void>
   addStudent: (payload: CreateStudentPayload) => Promise<void>
@@ -30,6 +31,7 @@ export function useRoutePlanner(): UseRoutePlannerResult {
   const [routeLoading, setRouteLoading] = useState(false)
   const [studentSaving, setStudentSaving] = useState(false)
   const [studentDeletingId, setStudentDeletingId] = useState<string | null>(null)
+  const [studentError, setStudentError] = useState<string | null>(null)
 
   const loadStudents = useCallback(async () => {
     setStudentsLoading(true)
@@ -74,6 +76,7 @@ export function useRoutePlanner(): UseRoutePlannerResult {
 
   const removeStudent = useCallback(
     async (id: string) => {
+      setStudentError(null)
       setStudentDeletingId(id)
       try {
         await deleteStudent(id)
@@ -81,7 +84,7 @@ export function useRoutePlanner(): UseRoutePlannerResult {
         setRoute(undefined)
       } catch (err) {
         console.error('Erro ao remover estudante', err)
-        throw err
+        setStudentError('Não foi possível remover o aluno. Tente novamente.')
       } finally {
         setStudentDeletingId(null)
       }
@@ -148,6 +151,7 @@ export function useRoutePlanner(): UseRoutePlannerResult {
     orderedStops,
     studentSaving,
     studentDeletingId,
+    studentError,
     loadStudents,
     requestRoute,
     addStudent,

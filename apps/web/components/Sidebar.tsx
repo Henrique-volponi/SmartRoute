@@ -19,6 +19,7 @@ interface Props {
   studentSaving: boolean
   onDeleteStudent: (id: string) => Promise<void>
   studentDeletingId: string | null
+  studentError: string | null
   route?: RouteResponse
   orderedStops: StopPoint[]
   onGenerate: (type: RouteKind) => void
@@ -32,6 +33,7 @@ export function Sidebar({
   studentSaving,
   onDeleteStudent,
   studentDeletingId,
+  studentError,
   route,
   orderedStops,
   onGenerate,
@@ -115,6 +117,7 @@ export function Sidebar({
           loading={studentsLoading}
           onDelete={onDeleteStudent}
           deletingId={studentDeletingId}
+          error={studentError}
         />
       </div>
     </aside>
