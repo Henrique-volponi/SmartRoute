@@ -34,7 +34,13 @@ export function StudentList({ students, loading, onDelete, deletingId, error }: 
               <IconButton
                 variant="danger"
                 label={`Excluir ${student.name}`}
-                onClick={() => onDelete(student.id)}
+                onClick={async () => {
+                  try {
+                    await onDelete(student.id)
+                  } catch (err) {
+                    console.error('Falha ao excluir aluno', err)
+                  }
+                }}
                 loading={deletingId === student.id}
               >
                 X
