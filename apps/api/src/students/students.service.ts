@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { Prisma } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateStudentDto } from './dto/create-student.dto'
 
@@ -17,8 +18,18 @@ export class StudentsService {
     })
   }
 
-  removeOne(id: string) {
-    return this.prisma.student.delete({ where: { id } })
+  async removeOne(id: string) {
+    try {
+      return await this.prisma.student.delete({ where: { id } })
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new NotFoundException(`Student with id ${id} not found`)
+      }
+      throw error
+    }
   }
 
   removeAll() {
