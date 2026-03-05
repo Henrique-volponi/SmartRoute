@@ -17,6 +17,7 @@ export default function HomePage() {
     studentSaving,
     removeStudent,
     studentDeletingId,
+    studentError,
   } = useRoutePlanner()
 
   const handleGenerate = (type: RouteKind) => {
@@ -32,6 +33,7 @@ export default function HomePage() {
         studentSaving={studentSaving}
         onDeleteStudent={removeStudent}
         studentDeletingId={studentDeletingId}
+        studentError={studentError}
         route={route}
         orderedStops={orderedStops}
         onGenerate={handleGenerate}
