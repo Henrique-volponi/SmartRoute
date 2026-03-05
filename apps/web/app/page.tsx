@@ -6,8 +6,19 @@ import { useRoutePlanner } from '../hooks/useRoutePlanner'
 import { RouteKind } from '../types/route'
 
 export default function HomePage() {
-  const { students, studentsLoading, route, routeLoading, orderedStops, requestRoute } =
-    useRoutePlanner()
+  const {
+    students,
+    studentsLoading,
+    route,
+    routeLoading,
+    orderedStops,
+    requestRoute,
+    addStudent,
+    studentSaving,
+    removeStudent,
+    studentDeletingId,
+    studentError,
+  } = useRoutePlanner()
 
   const handleGenerate = (type: RouteKind) => {
     requestRoute(type)
@@ -18,6 +29,11 @@ export default function HomePage() {
       <Sidebar
         students={students}
         studentsLoading={studentsLoading}
+        onAddStudent={addStudent}
+        studentSaving={studentSaving}
+        onDeleteStudent={removeStudent}
+        studentDeletingId={studentDeletingId}
+        studentError={studentError}
         route={route}
         orderedStops={orderedStops}
         onGenerate={handleGenerate}

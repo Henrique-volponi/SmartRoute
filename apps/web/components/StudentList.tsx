@@ -1,28 +1,52 @@
 import { Student } from '../types/student'
+import { IconButton } from './IconButton'
 
 interface Props {
   students: Student[]
   loading?: boolean
+  onDelete?: (id: string) => Promise<void>
+  deletingId?: string | null
+  error?: string | null
 }
 
-export function StudentList({ students, loading }: Props) {
+export function StudentList({ students, loading, onDelete, deletingId, error }: Props) {
   if (loading) {
     return <p className="muted">Carregando alunos…</p>
   }
 
-  if (!students.length) {
-    return <p className="muted">Nenhum aluno cadastrado.</p>
-  }
-
   return (
     <div className="list">
+      {error ? <div className="error-text">{error}</div> : null}
+
+      {!students.length ? <p className="muted">Nenhum aluno cadastrado.</p> : null}
+
       {students.map(student => (
         <div className="list-item" key={student.id}>
-          <h4>{student.name}</h4>
-          <p>{student.address}</p>
-          <p className="muted">
-            {student.latitude.toFixed(4)}, {student.longitude.toFixed(4)}
-          </p>
+          <div className="list-item-row">
+            <div>
+              <h4>{student.name}</h4>
+              <p>{student.address}</p>
+              <p className="muted">
+                {student.latitude.toFixed(4)}, {student.longitude.toFixed(4)}
+              </p>
+            </div>
+            {onDelete ? (
+              <IconButton
+                variant="danger"
+                label={`Excluir ${student.name}`}
+                onClick={async () => {
+                  try {
+                    await onDelete(student.id)
+                  } catch (err) {
+                    console.error('Falha ao excluir aluno', err)
+                  }
+                }}
+                loading={deletingId === student.id}
+              >
+                X
+              </IconButton>
+            ) : null}
+          </div>
         </div>
       ))}
     </div>
