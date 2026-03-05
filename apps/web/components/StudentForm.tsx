@@ -24,6 +24,7 @@ type FormState = typeof initialState
 export function StudentForm({ universities, loading, onSubmit, onCancel }: Props) {
   const [form, setForm] = useState<FormState>(initialState)
   const [error, setError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<{ name?: string; address?: string }>({})
 
   const firstUniversityId = useMemo(() => universities[0]?.id ?? '', [universities])
 
@@ -36,9 +37,25 @@ export function StudentForm({ universities, loading, onSubmit, onCancel }: Props
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
     setError(null)
+    setFieldErrors({})
 
     const latitude = Number(form.latitude)
     const longitude = Number(form.longitude)
+    const trimmedName = form.name.trim()
+    const trimmedAddress = form.address.trim()
+
+    const errors: { name?: string; address?: string } = {}
+    if (!trimmedName) {
+      errors.name = 'Nome é obrigatório.'
+    }
+    if (!trimmedAddress) {
+      errors.address = 'Endereço é obrigatório.'
+    }
+
+    if (errors.name || errors.address) {
+      setFieldErrors(errors)
+      return
+    }
 
     if (Number.isNaN(latitude) || Number.isNaN(longitude)) {
       setError('Latitude e longitude precisam ser números válidos.')
@@ -46,8 +63,8 @@ export function StudentForm({ universities, loading, onSubmit, onCancel }: Props
     }
 
     const payload: CreateStudentPayload = {
-      name: form.name.trim(),
-      address: form.address.trim(),
+      name: trimmedName,
+      address: trimmedAddress,
       latitude,
       longitude,
       universityId: form.universityId || firstUniversityId,
@@ -79,6 +96,9 @@ export function StudentForm({ universities, loading, onSubmit, onCancel }: Props
             required
             placeholder="Maria Silva"
           />
+          {fieldErrors.name ? (
+            <span className="error-text">{fieldErrors.name}</span>
+          ) : null}
         </label>
         <label className="field">
           <span className="field-label">Endereço</span>
@@ -90,6 +110,9 @@ export function StudentForm({ universities, loading, onSubmit, onCancel }: Props
             required
             placeholder="Rua Exemplo, 123"
           />
+          {fieldErrors.address ? (
+            <span className="error-text">{fieldErrors.address}</span>
+          ) : null}
         </label>
         <label className="field">
           <span className="field-label">Latitude</span>
