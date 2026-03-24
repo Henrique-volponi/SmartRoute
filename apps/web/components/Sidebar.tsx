@@ -94,6 +94,7 @@ export function Sidebar({
           <IconButton
             label={showForm ? 'Fechar formulário de aluno' : 'Adicionar aluno'}
             onClick={() => setShowForm(current => !current)}
+            style={{ marginBottom: 8 }}
           >
             {showForm ? '-' : '+'}
           </IconButton>
