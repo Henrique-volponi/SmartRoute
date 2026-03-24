@@ -25,15 +25,15 @@ export function RouteSummary({ route, orderedStops }: Props) {
   return (
     <div className="summary-card">
       <div>
-        <strong>Distância</strong>
+        <strong style={{ marginBottom: 4 }}>Distância</strong>
         <span>{formatDistance(route?.totalDistance)}</span>
       </div>
       <div>
-        <strong>Duração</strong>
+        <strong style={{ marginBottom: 4 }}>Duração</strong>
         <span>{formatDuration(route?.totalDuration)}</span>
       </div>
       <div>
-        <strong>Paradas</strong>
+        <strong style={{ marginBottom: 4 }}>Paradas</strong>
         <div className="order-list">
           {hasStops ? (
             orderedStops.map(stop => (
@@ -50,7 +50,7 @@ export function RouteSummary({ route, orderedStops }: Props) {
         </div>
       </div>
       <div>
-        <strong>Tipo</strong>
+        <strong style={{ marginBottom: 4 }}>Tipo</strong>
         <span>{route?.type ?? '—'}</span>
       </div>
     </div>
