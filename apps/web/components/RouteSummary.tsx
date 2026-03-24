@@ -14,73 +14,45 @@ function formatDuration(seconds?: number) {
   return `${hrs}h ${mins}min`
 }
 
-const LABELS = {
-  distance: 'Distância',
-  duration: 'Duração',
-  stops: 'Paradas',
-  type: 'Tipo',
-  noStops: 'Gere uma rota para ver a ordem.',
-}
-
-function DistanceBlock({ distance }: { distance?: number }) {
-  return (
-    <div>
-      <strong style={{ marginBottom: 4 }}>{LABELS.distance}</strong>
-      <span>{formatDistance(distance)}</span>
-    </div>
-  )
-}
-
-function DurationBlock({ duration }: { duration?: number }) {
-  return (
-    <div>
-      <strong style={{ marginBottom: 4 }}>{LABELS.duration}</strong>
-      <span>{formatDuration(duration)}</span>
-    </div>
-  )
-}
-
-function StopsBlock({ orderedStops }: { orderedStops: StopPoint[] }) {
-  const hasStops = orderedStops.length > 0
-  return (
-    <div>
-      <strong style={{ marginBottom: 4 }}>{LABELS.stops}</strong>
-      <div className="order-list">
-        {hasStops ? (
-          orderedStops.map(stop => (
-            <span className="order-pill" key={`${stop.label}-${stop.order ?? stop.lat}`}>
-              {stop.order ?? '•'} — {stop.label}
-            </span>
-          ))
-        ) : (
-          <span className="muted">{LABELS.noStops}</span>
-        )}
-      </div>
-    </div>
-  )
-}
-
-function TypeBlock({ type }: { type?: string }) {
-  return (
-    <div>
-      <strong style={{ marginBottom: 4 }}>{LABELS.type}</strong>
-      <span>{type ?? '—'}</span>
-    </div>
-  )
-}
-
 interface Props {
   route?: RouteResponse
   orderedStops: StopPoint[]
 }
 
 export function RouteSummary({ route, orderedStops }: Props) {
+  const hasStops = orderedStops.length > 0
+
   return (
     <div className="summary-card">
-      <DistanceBlock distance={route?.totalDistance} />
-      <DurationBlock duration={route?.totalDuration} />
-      <StopsBlock orderedStops={orderedStops} />
-      <TypeBlock type={route?.type} />
+      <div>
+        <strong style={{ marginBottom: 4 }}>Distância</strong>
+        <span>{formatDistance(route?.totalDistance)}</span>
+      </div>
+      <div>
+        <strong style={{ marginBottom: 4 }}>Duração</strong>
+        <span>{formatDuration(route?.totalDuration)}</span>
+      </div>
+      <div>
+        <strong style={{ marginBottom: 4 }}>Paradas</strong>
+        <div className="order-list">
+          {hasStops ? (
+            orderedStops.map(stop => (
+              <span
+                className="order-pill"
+                key={`${stop.label}-${stop.order ?? stop.lat}`}
+              >
+                {stop.order ?? '•'} — {stop.label}
+              </span>
+            ))
+          ) : (
+            <span className="muted">Gere uma rota para ver a ordem.</span>
+          )}
+        </div>
+      </div>
+      <div>
+        <strong style={{ marginBottom: 4 }}>Tipo</strong>
+        <span>{route?.type ?? '—'}</span>
+      </div>
     </div>
   )
 }
