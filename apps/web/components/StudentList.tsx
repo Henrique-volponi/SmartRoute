@@ -38,30 +38,32 @@ export function StudentList({
                 {student.latitude.toFixed(4)}, {student.longitude.toFixed(4)}
               </p>
             </div>
-            {onEdit ? (
-              <IconButton
-                label={`Editar ${student.name}`}
-                onClick={() => onEdit(student.id)}
-              >
-                ✎
-              </IconButton>
-            ) : null}
-            {onDelete ? (
-              <IconButton
-                variant="danger"
-                label={`Excluir ${student.name}`}
-                onClick={async () => {
-                  try {
-                    await onDelete(student.id)
-                  } catch (err) {
-                    console.error('Falha ao excluir aluno', err)
-                  }
-                }}
-                loading={deletingId === student.id}
-              >
-                X
-              </IconButton>
-            ) : null}
+            <div className="actions">
+              {onEdit ? (
+                <IconButton
+                  label={`Editar ${student.name}`}
+                  onClick={() => onEdit(student.id)}
+                >
+                  ✎
+                </IconButton>
+              ) : null}
+              {onDelete ? (
+                <IconButton
+                  variant="danger"
+                  label={`Excluir ${student.name}`}
+                  onClick={async () => {
+                    try {
+                      await onDelete(student.id)
+                    } catch (err) {
+                      console.error('Falha ao excluir aluno', err)
+                    }
+                  }}
+                  loading={deletingId === student.id}
+                >
+                  X
+                </IconButton>
+              ) : null}
+            </div>
           </div>
         </div>
       ))}
