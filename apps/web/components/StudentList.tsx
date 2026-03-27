@@ -4,12 +4,20 @@ import { IconButton } from './IconButton'
 interface Props {
   students: Student[]
   loading?: boolean
+  onEdit?: (id: string) => void
   onDelete?: (id: string) => Promise<void>
   deletingId?: string | null
   error?: string | null
 }
 
-export function StudentList({ students, loading, onDelete, deletingId, error }: Props) {
+export function StudentList({
+  students,
+  loading,
+  onEdit,
+  onDelete,
+  deletingId,
+  error,
+}: Props) {
   if (loading) {
     return <p className="muted">Carregando alunos…</p>
   }
@@ -30,6 +38,14 @@ export function StudentList({ students, loading, onDelete, deletingId, error }: 
                 {student.latitude.toFixed(4)}, {student.longitude.toFixed(4)}
               </p>
             </div>
+            {onEdit ? (
+              <IconButton
+                label={`Editar ${student.name}`}
+                onClick={() => onEdit(student.id)}
+              >
+                ✎
+              </IconButton>
+            ) : null}
             {onDelete ? (
               <IconButton
                 variant="danger"

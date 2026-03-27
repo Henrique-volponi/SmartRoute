@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateStudentDto } from './dto/create-student.dto'
+import { UpdateStudentDto } from './dto/update-student.dto'
+
 
 @Injectable()
 export class StudentsService {
@@ -17,6 +19,25 @@ export class StudentsService {
       orderBy: { name: 'asc' },
     })
   }
+
+  async update(id: string, dto: UpdateStudentDto) {
+  try {
+    return await this.prisma.student.update({
+      where: { id },
+      data: dto,
+      include: { university: true },
+    })
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2025'
+    ) {
+      throw new NotFoundException(`Student with id ${id} not found`)
+    }
+    throw error
+  }
+}
+
 
   async removeOne(id: string) {
     try {

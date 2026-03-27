@@ -8,6 +8,7 @@ import {
 import { generateRoute } from '../services/routes'
 import { RouteKind, RouteResponse, StopPoint } from '../types/route'
 import { Student } from '../types/student'
+import { updateStudent, UpdateStudentPayload } from '../services/students'
 
 interface UseRoutePlannerResult {
   students: Student[]
@@ -18,6 +19,9 @@ interface UseRoutePlannerResult {
   studentSaving: boolean
   studentDeletingId: string | null
   studentError: string | null
+  editingStudentId: string | null
+  editStudent: (id: string, payload: UpdateStudentPayload) => Promise<void>
+  setEditingStudentId: (id: string | null) => void
   loadStudents: () => Promise<void>
   requestRoute: (type: RouteKind) => Promise<void>
   addStudent: (payload: CreateStudentPayload) => Promise<void>
@@ -32,6 +36,7 @@ export function useRoutePlanner(): UseRoutePlannerResult {
   const [studentSaving, setStudentSaving] = useState(false)
   const [studentDeletingId, setStudentDeletingId] = useState<string | null>(null)
   const [studentError, setStudentError] = useState<string | null>(null)
+  const [editingStudentId, setEditingStudentId] = useState<string | null>(null)
 
   const loadStudents = useCallback(async () => {
     setStudentsLoading(true)
@@ -66,6 +71,24 @@ export function useRoutePlanner(): UseRoutePlannerResult {
         setRoute(undefined)
       } catch (err) {
         console.error('Erro ao criar estudante', err)
+        throw err
+      } finally {
+        setStudentSaving(false)
+      }
+    },
+    [loadStudents]
+  )
+
+  const editStudent = useCallback(
+    async (id: string, payload: UpdateStudentPayload) => {
+      setStudentSaving(true)
+      try {
+        await updateStudent(id, payload)
+        await loadStudents()
+        setRoute(undefined)
+        setEditingStudentId(null)
+      } catch (err) {
+        console.error('Erro ao atualizar estudante', err)
         throw err
       } finally {
         setStudentSaving(false)
@@ -155,6 +178,9 @@ export function useRoutePlanner(): UseRoutePlannerResult {
     loadStudents,
     requestRoute,
     addStudent,
+    editStudent,
     removeStudent,
+    editingStudentId,
+    setEditingStudentId,
   }
 }

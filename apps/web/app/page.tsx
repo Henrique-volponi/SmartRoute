@@ -14,6 +14,9 @@ export default function HomePage() {
     orderedStops,
     requestRoute,
     addStudent,
+    editStudent,
+    editingStudentId,
+    setEditingStudentId,
     studentSaving,
     removeStudent,
     studentDeletingId,
@@ -30,6 +33,9 @@ export default function HomePage() {
         students={students}
         studentsLoading={studentsLoading}
         onAddStudent={addStudent}
+        onEditStudent={editStudent}
+        editingStudentId={editingStudentId}
+        setEditingStudentId={setEditingStudentId}
         studentSaving={studentSaving}
         onDeleteStudent={removeStudent}
         studentDeletingId={studentDeletingId}

@@ -2,13 +2,14 @@
 
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { CreateStudentPayload } from '../services/students'
-import { University } from '../types/student'
+import { Student, University } from '../types/student'
 
 interface Props {
   universities: University[]
   loading: boolean
   onSubmit: (payload: CreateStudentPayload) => Promise<void>
   onCancel: () => void
+  initialData?: Student | null
 }
 
 const initialState = {
@@ -21,12 +22,33 @@ const initialState = {
 
 type FormState = typeof initialState
 
-export function StudentForm({ universities, loading, onSubmit, onCancel }: Props) {
+export function StudentForm({
+  universities,
+  loading,
+  onSubmit,
+  onCancel,
+  initialData,
+}: Props) {
   const [form, setForm] = useState<FormState>(initialState)
   const [error, setError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<{ name?: string; address?: string }>({})
+  const isEditing = !!initialData
 
   const firstUniversityId = useMemo(() => universities[0]?.id ?? '', [universities])
+
+  useEffect(() => {
+    if (initialData) {
+      setForm({
+        name: initialData.name,
+        address: initialData.address,
+        latitude: initialData.latitude.toString(),
+        longitude: initialData.longitude.toString(),
+        universityId: initialData.universityId,
+      })
+    } else {
+      setForm(initialState)
+    }
+  }, [initialData])
 
   useEffect(() => {
     if (!form.universityId && firstUniversityId) {
@@ -175,7 +197,7 @@ export function StudentForm({ universities, loading, onSubmit, onCancel }: Props
           type="submit"
           disabled={loading || !universities.length}
         >
-          {loading ? 'Salvando…' : 'Cadastrar aluno'}
+          {loading ? 'Salvando…' : isEditing ? 'Atualizar aluno' : 'Cadastrar aluno'}
         </button>
       </div>
     </form>

@@ -10,6 +10,8 @@ import {
 } from '@nestjs/common'
 import { StudentsService } from './students.service'
 import { CreateStudentDto } from './dto/create-student.dto'
+import { Patch } from '@nestjs/common'
+import { UpdateStudentDto } from './dto/update-student.dto'
 
 @Controller('students')
 export class StudentsController {
@@ -23,6 +25,11 @@ export class StudentsController {
   @Get()
   findAll() {
     return this.studentsService.findAll()
+  }
+
+  @Patch(':id')
+  update(@Param('id', new ParseUUIDPipe()) id: string, @Body() dto: UpdateStudentDto) {
+    return this.studentsService.update(id, dto)
   }
 
   @Delete(':id')
