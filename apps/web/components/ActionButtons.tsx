@@ -9,14 +9,14 @@ export function ActionButtons({ onGenerate, loading }: Props) {
   return (
     <div className="actions">
       <button className="button" onClick={() => onGenerate('IDA')} disabled={loading}>
-        {loading ? 'Gerando…' : 'Gerar Rota da Manhã'}
+        {loading ? 'Gerando…' : 'Gerar Rota de Ida ao Campus'}
       </button>
       <button
         className="button secondary"
         onClick={() => onGenerate('VOLTA')}
         disabled={loading}
       >
-        {loading ? 'Gerando…' : 'Gerar Rota da Volta'}
+        {loading ? 'Gerando…' : 'Gerar Rota da Volta do Campus'}
       </button>
     </div>
   )
