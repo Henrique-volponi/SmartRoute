@@ -109,11 +109,18 @@
 }
 
 .order-pill {
+  display: inline-block;
   padding: 6px 8px;
   border-radius: 10px;
   background: rgba(34, 197, 94, 0.12);
   border: 1px solid rgba(34, 197, 94, 0.3);
   color: #ccefd8;
+  width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+  justify-content: flex-start;
 }
 
 .muted {

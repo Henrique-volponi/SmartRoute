@@ -40,8 +40,9 @@ export function RouteSummary({ route, orderedStops }: Props) {
               <span
                 className="order-pill"
                 key={`${stop.label}-${stop.order ?? stop.lat}`}
+                title={stop.label}
               >
-                {stop.order ?? '•'} — {stop.label}
+                {stop.order ?? '•'} {stop.label}
               </span>
             ))
           ) : (
