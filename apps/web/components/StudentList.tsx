@@ -4,12 +4,20 @@ import { IconButton } from './IconButton'
 interface Props {
   students: Student[]
   loading?: boolean
+  onEdit?: (id: string) => void
   onDelete?: (id: string) => Promise<void>
   deletingId?: string | null
   error?: string | null
 }
 
-export function StudentList({ students, loading, onDelete, deletingId, error }: Props) {
+export function StudentList({
+  students,
+  loading,
+  onEdit,
+  onDelete,
+  deletingId,
+  error,
+}: Props) {
   if (loading) {
     return <p className="muted">Carregando alunos…</p>
   }
@@ -30,22 +38,32 @@ export function StudentList({ students, loading, onDelete, deletingId, error }: 
                 {student.latitude.toFixed(4)}, {student.longitude.toFixed(4)}
               </p>
             </div>
-            {onDelete ? (
-              <IconButton
-                variant="danger"
-                label={`Excluir ${student.name}`}
-                onClick={async () => {
-                  try {
-                    await onDelete(student.id)
-                  } catch (err) {
-                    console.error('Falha ao excluir aluno', err)
-                  }
-                }}
-                loading={deletingId === student.id}
-              >
-                X
-              </IconButton>
-            ) : null}
+            <div className="actions">
+              {onEdit ? (
+                <IconButton
+                  label={`Editar ${student.name}`}
+                  onClick={() => onEdit(student.id)}
+                >
+                  ✎
+                </IconButton>
+              ) : null}
+              {onDelete ? (
+                <IconButton
+                  variant="danger"
+                  label={`Excluir ${student.name}`}
+                  onClick={async () => {
+                    try {
+                      await onDelete(student.id)
+                    } catch (err) {
+                      console.error('Falha ao excluir aluno', err)
+                    }
+                  }}
+                  loading={deletingId === student.id}
+                >
+                  X
+                </IconButton>
+              ) : null}
+            </div>
           </div>
         </div>
       ))}
