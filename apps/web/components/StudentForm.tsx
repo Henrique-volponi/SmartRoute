@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { CreateStudentPayload } from '../services/students'
 import { Student, University } from '../types/student'
 import { ConfirmDialog } from './ConfirmDialog'
+import { geocodeAddress } from '../services/geocoding'
 
 interface Props {
   universities: University[]
@@ -34,6 +35,8 @@ export function StudentForm({
   const [error, setError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<{ name?: string; address?: string }>({})
   const [pendingPayload, setPendingPayload] = useState<CreateStudentPayload | null>(null)
+  const [geocoding, setGeocoding] = useState(false)
+  const [geocoded, setGeocoded] = useState(false)
   const isEditing = !!initialData
 
   const firstUniversityId = useMemo(() => universities[0]?.id ?? '', [universities])
@@ -50,6 +53,7 @@ export function StudentForm({
     } else {
       setForm(initialState)
     }
+    setGeocoded(false)
   }, [initialData])
 
   useEffect(() => {
@@ -57,6 +61,33 @@ export function StudentForm({
       setForm(prev => ({ ...prev, universityId: firstUniversityId }))
     }
   }, [firstUniversityId, form.universityId])
+
+  const handleGeocode = async () => {
+    const address = form.address.trim()
+    if (!address) return
+
+    setGeocoding(true)
+    setGeocoded(false)
+    setError(null)
+
+    try {
+      const result = await geocodeAddress(address)
+      if (!result) {
+        setError('Endereço não encontrado. Tente ser mais específico ou preencha as coordenadas manualmente.')
+        return
+      }
+      setForm(prev => ({
+        ...prev,
+        latitude: result.lat.toFixed(6),
+        longitude: result.lng.toFixed(6),
+      }))
+      setGeocoded(true)
+    } catch {
+      setError('Não foi possível buscar as coordenadas. Verifique sua conexão.')
+    } finally {
+      setGeocoding(false)
+    }
+  }
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -102,6 +133,7 @@ export function StudentForm({
     try {
       await onSubmit(payload)
       setForm(initialState)
+      setGeocoded(false)
     } catch (err) {
       console.error('Erro ao salvar aluno', err)
       setError('Não foi possível salvar o aluno. Tente novamente.')
@@ -110,6 +142,7 @@ export function StudentForm({
 
   const updateField = (key: keyof FormState, value: string) => {
     setForm(prev => ({ ...prev, [key]: value }))
+    if (key === 'address') setGeocoded(false)
   }
 
   return (
@@ -144,44 +177,72 @@ export function StudentForm({
               <span className="error-text">{fieldErrors.name}</span>
             ) : null}
           </label>
-          <label className="field">
+
+          <div className="field">
             <span className="field-label">Endereço</span>
-            <input
-              className="input"
-              type="text"
-              value={form.address}
-              onChange={e => updateField('address', e.target.value)}
-              required
-              placeholder="Rua Exemplo, 123"
-            />
+            <div className="geocode-row">
+              <input
+                className="input"
+                type="text"
+                value={form.address}
+                onChange={e => updateField('address', e.target.value)}
+                required
+                placeholder="Rua Exemplo, 123, Belo Horizonte"
+              />
+              <button
+                type="button"
+                className="geocode-btn"
+                onClick={handleGeocode}
+                disabled={geocoding || !form.address.trim()}
+                title="Buscar coordenadas pelo endereço"
+              >
+                {geocoding ? (
+                  <span className="geocode-spinner" />
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                )}
+              </button>
+            </div>
             {fieldErrors.address ? (
               <span className="error-text">{fieldErrors.address}</span>
             ) : null}
-          </label>
+          </div>
+
           <label className="field">
-            <span className="field-label">Latitude</span>
+            <span className="field-label">
+              Latitude
+              {geocoded ? <span className="geocode-tag">auto</span> : null}
+            </span>
             <input
-              className="input"
+              className={`input${geocoded ? ' input-geocoded' : ''}`}
               type="number"
               step="any"
               value={form.latitude}
-              onChange={e => updateField('latitude', e.target.value)}
+              onChange={e => { updateField('latitude', e.target.value); setGeocoded(false) }}
               required
-              placeholder="-23.5614"
+              placeholder="-19.8716"
             />
           </label>
+
           <label className="field">
-            <span className="field-label">Longitude</span>
+            <span className="field-label">
+              Longitude
+              {geocoded ? <span className="geocode-tag">auto</span> : null}
+            </span>
             <input
-              className="input"
+              className={`input${geocoded ? ' input-geocoded' : ''}`}
               type="number"
               step="any"
               value={form.longitude}
-              onChange={e => updateField('longitude', e.target.value)}
+              onChange={e => { updateField('longitude', e.target.value); setGeocoded(false) }}
               required
-              placeholder="-46.6558"
+              placeholder="-43.9671"
             />
           </label>
+
           <label className="field">
             <span className="field-label">Universidade</span>
             <select
