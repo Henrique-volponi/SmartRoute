@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { CreateStudentPayload } from '../services/students'
 import { Student, University } from '../types/student'
+import { ConfirmDialog } from './ConfirmDialog'
 
 interface Props {
   universities: University[]
@@ -32,6 +33,7 @@ export function StudentForm({
   const [form, setForm] = useState<FormState>(initialState)
   const [error, setError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<{ name?: string; address?: string }>({})
+  const [pendingPayload, setPendingPayload] = useState<CreateStudentPayload | null>(null)
   const isEditing = !!initialData
 
   const firstUniversityId = useMemo(() => universities[0]?.id ?? '', [universities])
@@ -67,12 +69,8 @@ export function StudentForm({
     const trimmedAddress = form.address.trim()
 
     const errors: { name?: string; address?: string } = {}
-    if (!trimmedName) {
-      errors.name = 'Nome é obrigatório.'
-    }
-    if (!trimmedAddress) {
-      errors.address = 'Endereço é obrigatório.'
-    }
+    if (!trimmedName) errors.name = 'Nome é obrigatório.'
+    if (!trimmedAddress) errors.address = 'Endereço é obrigatório.'
 
     if (errors.name || errors.address) {
       setFieldErrors(errors)
@@ -92,11 +90,20 @@ export function StudentForm({
       universityId: form.universityId || firstUniversityId,
     }
 
+    if (isEditing) {
+      setPendingPayload(payload)
+      return
+    }
+
+    await submitPayload(payload)
+  }
+
+  const submitPayload = async (payload: CreateStudentPayload) => {
     try {
       await onSubmit(payload)
       setForm(initialState)
     } catch (err) {
-      console.error('Erro ao criar aluno', err)
+      console.error('Erro ao salvar aluno', err)
       setError('Não foi possível salvar o aluno. Tente novamente.')
     }
   }
@@ -106,100 +113,116 @@ export function StudentForm({
   }
 
   return (
-    <form className="card" onSubmit={handleSubmit}>
-      <div className="form-grid">
-        <label className="field">
-          <span className="field-label">Nome</span>
-          <input
-            className="input"
-            type="text"
-            value={form.name}
-            onChange={e => updateField('name', e.target.value)}
-            required
-            placeholder="Maria Silva"
-          />
-          {fieldErrors.name ? (
-            <span className="error-text">{fieldErrors.name}</span>
-          ) : null}
-        </label>
-        <label className="field">
-          <span className="field-label">Endereço</span>
-          <input
-            className="input"
-            type="text"
-            value={form.address}
-            onChange={e => updateField('address', e.target.value)}
-            required
-            placeholder="Rua Exemplo, 123"
-          />
-          {fieldErrors.address ? (
-            <span className="error-text">{fieldErrors.address}</span>
-          ) : null}
-        </label>
-        <label className="field">
-          <span className="field-label">Latitude</span>
-          <input
-            className="input"
-            type="number"
-            step="any"
-            value={form.latitude}
-            onChange={e => updateField('latitude', e.target.value)}
-            required
-            placeholder="-23.5614"
-          />
-        </label>
-        <label className="field">
-          <span className="field-label">Longitude</span>
-          <input
-            className="input"
-            type="number"
-            step="any"
-            value={form.longitude}
-            onChange={e => updateField('longitude', e.target.value)}
-            required
-            placeholder="-46.6558"
-          />
-        </label>
-        <label className="field">
-          <span className="field-label">Universidade</span>
-          <select
-            className="input"
-            value={form.universityId || firstUniversityId}
-            onChange={e => updateField('universityId', e.target.value)}
-            required
-            disabled={!universities.length}
+    <>
+      {pendingPayload ? (
+        <ConfirmDialog
+          variant="default"
+          title="Atualizar aluno"
+          message={`Tem certeza que deseja salvar as alterações de "${initialData?.name}"?`}
+          confirmLabel="Atualizar"
+          onConfirm={async () => {
+            setPendingPayload(null)
+            await submitPayload(pendingPayload)
+          }}
+          onCancel={() => setPendingPayload(null)}
+        />
+      ) : null}
+
+      <form className="card" onSubmit={handleSubmit} style={{ marginBottom: 12 }}>
+        <div className="form-grid">
+          <label className="field">
+            <span className="field-label">Nome</span>
+            <input
+              className="input"
+              type="text"
+              value={form.name}
+              onChange={e => updateField('name', e.target.value)}
+              required
+              placeholder="Maria Silva"
+            />
+            {fieldErrors.name ? (
+              <span className="error-text">{fieldErrors.name}</span>
+            ) : null}
+          </label>
+          <label className="field">
+            <span className="field-label">Endereço</span>
+            <input
+              className="input"
+              type="text"
+              value={form.address}
+              onChange={e => updateField('address', e.target.value)}
+              required
+              placeholder="Rua Exemplo, 123"
+            />
+            {fieldErrors.address ? (
+              <span className="error-text">{fieldErrors.address}</span>
+            ) : null}
+          </label>
+          <label className="field">
+            <span className="field-label">Latitude</span>
+            <input
+              className="input"
+              type="number"
+              step="any"
+              value={form.latitude}
+              onChange={e => updateField('latitude', e.target.value)}
+              required
+              placeholder="-23.5614"
+            />
+          </label>
+          <label className="field">
+            <span className="field-label">Longitude</span>
+            <input
+              className="input"
+              type="number"
+              step="any"
+              value={form.longitude}
+              onChange={e => updateField('longitude', e.target.value)}
+              required
+              placeholder="-46.6558"
+            />
+          </label>
+          <label className="field">
+            <span className="field-label">Universidade</span>
+            <select
+              className="input"
+              value={form.universityId || firstUniversityId}
+              onChange={e => updateField('universityId', e.target.value)}
+              required
+              disabled={!universities.length}
+            >
+              {universities.map(university => (
+                <option key={university.id} value={university.id}>
+                  {university.name}
+                </option>
+              ))}
+            </select>
+            {!universities.length ? (
+              <span className="helper">Cadastre uma universidade primeiro.</span>
+            ) : null}
+          </label>
+        </div>
+
+        {error ? <div className="error-text" style={{ marginTop: 10 }}>{error}</div> : null}
+
+        <div className="form-actions">
+          <button
+            className="button secondary"
+            type="button"
+            onClick={onCancel}
+            disabled={loading}
           >
-            {universities.map(university => (
-              <option key={university.id} value={university.id}>
-                {university.name}
-              </option>
-            ))}
-          </select>
-          {!universities.length ? (
-            <span className="helper">Cadastre uma universidade primeiro.</span>
-          ) : null}
-        </label>
-      </div>
-
-      {error ? <div className="error-text">{error}</div> : null}
-
-      <div className="form-actions">
-        <button
-          className="button secondary"
-          type="button"
-          onClick={onCancel}
-          disabled={loading}
-        >
-          Cancelar
-        </button>
-        <button
-          className="button"
-          type="submit"
-          disabled={loading || !universities.length}
-        >
-          {loading ? 'Salvando…' : isEditing ? 'Atualizar aluno' : 'Cadastrar aluno'}
-        </button>
-      </div>
-    </form>
+            Cancelar
+          </button>
+          <button
+            className="button"
+            type="submit"
+            disabled={loading || !universities.length}
+          >
+            {loading ? 'Salvando…' : isEditing ? 'Atualizar aluno' : 'Cadastrar aluno'}
+          </button>
+        </div>
+      </form>
+    </>
   )
 }
