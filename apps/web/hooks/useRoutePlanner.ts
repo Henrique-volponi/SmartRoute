@@ -9,6 +9,7 @@ import { generateRoute } from '../services/routes'
 import { RouteKind, RouteResponse, StopPoint } from '../types/route'
 import { Student } from '../types/student'
 import { updateStudent, UpdateStudentPayload } from '../services/students'
+import { extractApiError } from '../utils/apiError'
 
 interface UseRoutePlannerResult {
   students: Student[]
@@ -16,6 +17,7 @@ interface UseRoutePlannerResult {
   route?: RouteResponse
   routeGeneratedAt?: Date
   routeLoading: boolean
+  routeError: string | null
   orderedStops: StopPoint[]
   studentSaving: boolean
   studentDeletingId: string | null
@@ -35,6 +37,7 @@ export function useRoutePlanner(): UseRoutePlannerResult {
   const [route, setRoute] = useState<RouteResponse | undefined>(undefined)
   const [routeGeneratedAt, setRouteGeneratedAt] = useState<Date | undefined>(undefined)
   const [routeLoading, setRouteLoading] = useState(false)
+  const [routeError, setRouteError] = useState<string | null>(null)
   const [studentSaving, setStudentSaving] = useState(false)
   const [studentDeletingId, setStudentDeletingId] = useState<string | null>(null)
   const [studentError, setStudentError] = useState<string | null>(null)
@@ -54,6 +57,7 @@ export function useRoutePlanner(): UseRoutePlannerResult {
 
   const requestRoute = useCallback(async (type: RouteKind) => {
     setRouteLoading(true)
+    setRouteError(null)
     const clickedAt = new Date()
     try {
       const result = await generateRoute(type)
@@ -61,6 +65,7 @@ export function useRoutePlanner(): UseRoutePlannerResult {
       setRouteGeneratedAt(clickedAt)
     } catch (err) {
       console.error('Erro ao gerar rota', err)
+      setRouteError(extractApiError(err, 'Não foi possível gerar a rota. Tente novamente.'))
     } finally {
       setRouteLoading(false)
     }
@@ -177,6 +182,7 @@ export function useRoutePlanner(): UseRoutePlannerResult {
     route,
     routeGeneratedAt,
     routeLoading,
+    routeError,
     orderedStops,
     studentSaving,
     studentDeletingId,
