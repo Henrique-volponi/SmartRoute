@@ -92,24 +92,29 @@ export function Sidebar({
 
   return (
     <aside className="sidebar">
+      {/* Header */}
       <div className="header">
         <div>
           <div className="title">SmartRoute</div>
-          <p className="muted" style={{ marginTop: 4 }}>
-            Gere rotas otimizadas de ida e volta.
-          </p>
+          <p className="header-sub">Rotas otimizadas de ida e volta.</p>
         </div>
         <span className="badge">Beta</span>
       </div>
 
-      <ActionButtons onGenerate={onGenerate} loading={routeLoading} />
+      {/* Rotas */}
+      <div className="sidebar-section">
+        <div className="section-title">Gerar Rota</div>
+        <ActionButtons onGenerate={onGenerate} loading={routeLoading} />
+      </div>
 
-      <div>
+      {/* Resumo */}
+      <div className="sidebar-section">
         <div className="section-title">Resumo</div>
         <RouteSummary route={route} orderedStops={orderedStops} />
       </div>
 
-      <div>
+      {/* Alunos */}
+      <div className="sidebar-section">
         <div className="section-title-row">
           <div className="section-title">Alunos</div>
           <IconButton
@@ -127,14 +132,14 @@ export function Sidebar({
                 return !current
               })
             }}
-            style={{ marginBottom: 8 }}
           >
-            {showForm || editingStudentId ? '-' : '+'}
+            {showForm || editingStudentId ? '−' : '+'}
           </IconButton>
         </div>
+
         {showForm || editingStudentId ? (
           universitiesLoading ? (
-            <div className="muted" style={{ padding: 12 }}>
+            <div className="muted" style={{ padding: '12px 0', fontSize: 13 }}>
               Carregando universidades…
             </div>
           ) : (
@@ -150,6 +155,7 @@ export function Sidebar({
             />
           )
         ) : null}
+
         <StudentList
           students={students}
           loading={studentsLoading}

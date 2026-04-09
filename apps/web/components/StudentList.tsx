@@ -19,26 +19,28 @@ export function StudentList({
   error,
 }: Props) {
   if (loading) {
-    return <p className="muted">Carregando alunos…</p>
+    return <p className="muted" style={{ fontSize: 13 }}>Carregando alunos…</p>
   }
 
   return (
     <div className="list">
       {error ? <div className="error-text">{error}</div> : null}
 
-      {!students.length ? <p className="muted">Nenhum aluno cadastrado.</p> : null}
+      {!students.length ? (
+        <p className="muted" style={{ fontSize: 13 }}>Nenhum aluno cadastrado.</p>
+      ) : null}
 
       {students.map(student => (
         <div className="list-item" key={student.id}>
           <div className="list-item-row">
-            <div>
+            <div style={{ minWidth: 0 }}>
               <h4>{student.name}</h4>
               <p>{student.address}</p>
-              <p className="muted">
+              <p className="coords">
                 {student.latitude.toFixed(4)}, {student.longitude.toFixed(4)}
               </p>
             </div>
-            <div className="actions">
+            <div className="actions-row">
               {onEdit ? (
                 <IconButton
                   label={`Editar ${student.name}`}
@@ -60,7 +62,7 @@ export function StudentList({
                   }}
                   loading={deletingId === student.id}
                 >
-                  X
+                  ✕
                 </IconButton>
               ) : null}
             </div>

@@ -24,16 +24,23 @@ export function RouteSummary({ route, orderedStops }: Props) {
 
   return (
     <div className="summary-card">
-      <div>
-        <strong style={{ marginBottom: 4 }}>Distância</strong>
-        <span>{formatDistance(route?.totalDistance)}</span>
+      <div className="summary-stats">
+        <div className="summary-stat">
+          <div className="summary-stat-label">Distância</div>
+          <div className={`summary-stat-value${route ? ' accent' : ''}`}>
+            {formatDistance(route?.totalDistance)}
+          </div>
+        </div>
+        <div className="summary-stat">
+          <div className="summary-stat-label">Duração</div>
+          <div className={`summary-stat-value${route ? ' accent' : ''}`}>
+            {formatDuration(route?.totalDuration)}
+          </div>
+        </div>
       </div>
-      <div>
-        <strong style={{ marginBottom: 4 }}>Duração</strong>
-        <span>{formatDuration(route?.totalDuration)}</span>
-      </div>
-      <div>
-        <strong style={{ marginBottom: 4 }}>Paradas</strong>
+
+      <div className="summary-stops">
+        <div className="summary-stat-label" style={{ marginBottom: 8 }}>Paradas</div>
         <div className="order-list">
           {hasStops ? (
             orderedStops.map(stop => (
@@ -42,17 +49,21 @@ export function RouteSummary({ route, orderedStops }: Props) {
                 key={`${stop.label}-${stop.order ?? stop.lat}`}
                 title={stop.label}
               >
-                {stop.order ?? '•'} {stop.label}
+                <span className="order-pill-num">{stop.order ?? '•'}</span>
+                {stop.label}
               </span>
             ))
           ) : (
-            <span className="muted">Gere uma rota para ver a ordem.</span>
+            <span className="muted" style={{ fontSize: 12 }}>
+              Gere uma rota para ver a ordem.
+            </span>
           )}
         </div>
       </div>
-      <div>
-        <strong style={{ marginBottom: 4 }}>Tipo</strong>
-        <span>{route?.type ?? '—'}</span>
+
+      <div className="summary-type">
+        <span className="summary-type-label">Tipo</span>
+        <span className="summary-type-value">{route?.type ?? '—'}</span>
       </div>
     </div>
   )
