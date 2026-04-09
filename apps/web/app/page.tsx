@@ -3,6 +3,7 @@
 import { Sidebar } from '../components/Sidebar'
 import { MapView } from '../components/MapView'
 import { useRoutePlanner } from '../hooks/useRoutePlanner'
+import { useUniversities } from '../hooks/useUniversities'
 import { RouteKind } from '../types/route'
 
 export default function HomePage() {
@@ -12,6 +13,7 @@ export default function HomePage() {
     route,
     routeGeneratedAt,
     routeLoading,
+    routeError,
     orderedStops,
     requestRoute,
     addStudent,
@@ -24,9 +26,7 @@ export default function HomePage() {
     studentError,
   } = useRoutePlanner()
 
-  const handleGenerate = (type: RouteKind) => {
-    requestRoute(type)
-  }
+  const { universities } = useUniversities()
 
   return (
     <div className="layout">
@@ -44,8 +44,10 @@ export default function HomePage() {
         route={route}
         routeGeneratedAt={routeGeneratedAt}
         orderedStops={orderedStops}
-        onGenerate={handleGenerate}
+        onGenerate={(type: RouteKind) => requestRoute(type)}
         routeLoading={routeLoading}
+        routeError={routeError}
+        universities={universities}
       />
 
       <main className="content">
