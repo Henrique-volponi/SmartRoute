@@ -24,6 +24,7 @@ interface Props {
   studentDeletingId: string | null
   studentError: string | null
   route?: RouteResponse
+  routeGeneratedAt?: Date
   orderedStops: StopPoint[]
   onGenerate: (type: RouteKind) => void
   routeLoading: boolean
@@ -41,6 +42,7 @@ export function Sidebar({
   studentDeletingId,
   studentError,
   route,
+  routeGeneratedAt,
   orderedStops,
   onGenerate,
   routeLoading,
@@ -110,7 +112,7 @@ export function Sidebar({
       {/* Resumo */}
       <div className="sidebar-section">
         <div className="section-title">Resumo</div>
-        <RouteSummary route={route} orderedStops={orderedStops} />
+        <RouteSummary route={route} orderedStops={orderedStops} generatedAt={routeGeneratedAt} />
       </div>
 
       {/* Alunos */}

@@ -260,3 +260,89 @@
   gap: 8px;
   align-items: center;
 }
+
+/* ── Traffic banner ── */
+.traffic-banner {
+  border-top: 1px solid var(--border);
+  padding: 12px 16px;
+}
+
+.traffic-banner-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.traffic-label {
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.traffic-time {
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+
+.traffic-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.traffic-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+}
+
+.traffic-stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+
+.traffic-stat-value {
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.traffic-extra {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+
+/* Severity colors */
+.traffic-high .traffic-label   { color: #fca5a5; }
+.traffic-high .traffic-stat-value { color: #fca5a5; }
+.traffic-high .traffic-extra   { background: rgba(248,113,113,0.15); color: #fca5a5; border: 1px solid rgba(248,113,113,0.3); }
+.traffic-high .traffic-stat    { border-color: rgba(248,113,113,0.15); }
+
+.traffic-medium .traffic-label { color: #fcd34d; }
+.traffic-medium .traffic-stat-value { color: #fcd34d; }
+.traffic-medium .traffic-extra { background: rgba(252,211,77,0.12); color: #fcd34d; border: 1px solid rgba(252,211,77,0.25); }
+.traffic-medium .traffic-stat  { border-color: rgba(252,211,77,0.12); }
+
+.traffic-low .traffic-label    { color: var(--accent); }
+.traffic-low .traffic-stat-value { color: var(--accent); }
+.traffic-low .traffic-extra    { background: var(--accent-subtle); color: var(--accent); border: 1px solid rgba(34,197,94,0.25); }
+.traffic-low .traffic-stat     { border-color: rgba(34,197,94,0.12); }

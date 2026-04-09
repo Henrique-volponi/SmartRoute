@@ -10,6 +10,7 @@ export default function HomePage() {
     students,
     studentsLoading,
     route,
+    routeGeneratedAt,
     routeLoading,
     orderedStops,
     requestRoute,
@@ -41,6 +42,7 @@ export default function HomePage() {
         studentDeletingId={studentDeletingId}
         studentError={studentError}
         route={route}
+        routeGeneratedAt={routeGeneratedAt}
         orderedStops={orderedStops}
         onGenerate={handleGenerate}
         routeLoading={routeLoading}

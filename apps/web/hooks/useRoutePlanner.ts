@@ -14,6 +14,7 @@ interface UseRoutePlannerResult {
   students: Student[]
   studentsLoading: boolean
   route?: RouteResponse
+  routeGeneratedAt?: Date
   routeLoading: boolean
   orderedStops: StopPoint[]
   studentSaving: boolean
@@ -32,6 +33,7 @@ export function useRoutePlanner(): UseRoutePlannerResult {
   const [students, setStudents] = useState<Student[]>([])
   const [studentsLoading, setStudentsLoading] = useState(false)
   const [route, setRoute] = useState<RouteResponse | undefined>(undefined)
+  const [routeGeneratedAt, setRouteGeneratedAt] = useState<Date | undefined>(undefined)
   const [routeLoading, setRouteLoading] = useState(false)
   const [studentSaving, setStudentSaving] = useState(false)
   const [studentDeletingId, setStudentDeletingId] = useState<string | null>(null)
@@ -52,9 +54,11 @@ export function useRoutePlanner(): UseRoutePlannerResult {
 
   const requestRoute = useCallback(async (type: RouteKind) => {
     setRouteLoading(true)
+    const clickedAt = new Date()
     try {
       const result = await generateRoute(type)
       setRoute(result)
+      setRouteGeneratedAt(clickedAt)
     } catch (err) {
       console.error('Erro ao gerar rota', err)
     } finally {
@@ -69,6 +73,7 @@ export function useRoutePlanner(): UseRoutePlannerResult {
         await createStudent(payload)
         await loadStudents()
         setRoute(undefined)
+        setRouteGeneratedAt(undefined)
       } catch (err) {
         console.error('Erro ao criar estudante', err)
         throw err
@@ -170,6 +175,7 @@ export function useRoutePlanner(): UseRoutePlannerResult {
     students,
     studentsLoading,
     route,
+    routeGeneratedAt,
     routeLoading,
     orderedStops,
     studentSaving,
