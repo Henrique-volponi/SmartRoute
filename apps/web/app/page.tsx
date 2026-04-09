@@ -26,7 +26,15 @@ export default function HomePage() {
     studentError,
   } = useRoutePlanner()
 
-  const { universities } = useUniversities()
+  const {
+    universities,
+    loading: universitiesLoading,
+    saving: universitySaving,
+    deletingId: universityDeletingId,
+    error: universityError,
+    add: addUniversity,
+    remove: removeUniversity,
+  } = useUniversities()
 
   return (
     <div className="layout">
@@ -41,13 +49,19 @@ export default function HomePage() {
         onDeleteStudent={removeStudent}
         studentDeletingId={studentDeletingId}
         studentError={studentError}
+        universities={universities}
+        universitiesLoading={universitiesLoading}
+        universitySaving={universitySaving}
+        universityDeletingId={universityDeletingId}
+        universityError={universityError}
+        onAddUniversity={addUniversity}
+        onDeleteUniversity={removeUniversity}
         route={route}
         routeGeneratedAt={routeGeneratedAt}
         orderedStops={orderedStops}
         onGenerate={(type: RouteKind) => requestRoute(type)}
         routeLoading={routeLoading}
         routeError={routeError}
-        universities={universities}
       />
 
       <main className="content">

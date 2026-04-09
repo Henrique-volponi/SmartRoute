@@ -3,14 +3,18 @@
 import { useState } from 'react'
 import { ActionButtons } from './ActionButtons'
 import { StudentList } from './StudentList'
+import { StudentForm } from './StudentForm'
+import { UniversityForm } from './UniversityForm'
+import { UniversityList } from './UniversityList'
 import { RouteSummary } from './RouteSummary'
+import { IconButton } from './IconButton'
 import { RouteKind, RouteResponse, StopPoint } from '../types/route'
 import { Student, University } from '../types/student'
-import { StudentForm } from './StudentForm'
 import { CreateStudentPayload, UpdateStudentPayload } from '../services/students'
-import { IconButton } from './IconButton'
+import { CreateUniversityPayload } from '../services/universities'
 
 interface Props {
+  // students
   students: Student[]
   studentsLoading: boolean
   onAddStudent: (payload: CreateStudentPayload) => Promise<void>
@@ -21,13 +25,21 @@ interface Props {
   onDeleteStudent: (id: string) => Promise<void>
   studentDeletingId: string | null
   studentError: string | null
+  // universities
+  universities: University[]
+  universitiesLoading: boolean
+  universitySaving: boolean
+  universityDeletingId: string | null
+  universityError: string | null
+  onAddUniversity: (payload: CreateUniversityPayload) => Promise<void>
+  onDeleteUniversity: (id: string) => Promise<void>
+  // route
   route?: RouteResponse
   routeGeneratedAt?: Date
   orderedStops: StopPoint[]
   onGenerate: (type: RouteKind) => void
   routeLoading: boolean
   routeError: string | null
-  universities: University[]
 }
 
 export function Sidebar({
@@ -41,15 +53,22 @@ export function Sidebar({
   onDeleteStudent,
   studentDeletingId,
   studentError,
+  universities,
+  universitiesLoading,
+  universitySaving,
+  universityDeletingId,
+  universityError,
+  onAddUniversity,
+  onDeleteUniversity,
   route,
   routeGeneratedAt,
   orderedStops,
   onGenerate,
   routeLoading,
   routeError,
-  universities,
 }: Props) {
-  const [showForm, setShowForm] = useState(false)
+  const [showStudentForm, setShowStudentForm] = useState(false)
+  const [showUniversityForm, setShowUniversityForm] = useState(false)
 
   const editingStudent = editingStudentId
     ? students.find(s => s.id === editingStudentId)
@@ -61,8 +80,13 @@ export function Sidebar({
       setEditingStudentId(null)
     } else {
       await onAddStudent(payload)
-      setShowForm(false)
+      setShowStudentForm(false)
     }
+  }
+
+  const handleUniversitySubmit = async (payload: CreateUniversityPayload) => {
+    await onAddUniversity(payload)
+    setShowUniversityForm(false)
   }
 
   return (
@@ -76,7 +100,7 @@ export function Sidebar({
         <span className="badge">Beta</span>
       </div>
 
-      {/* Rotas */}
+      {/* Gerar Rota */}
       <div className="sidebar-section">
         <div className="section-title">Gerar Rota</div>
         <ActionButtons onGenerate={onGenerate} loading={routeLoading} error={routeError} />
@@ -88,14 +112,43 @@ export function Sidebar({
         <RouteSummary route={route} orderedStops={orderedStops} generatedAt={routeGeneratedAt} />
       </div>
 
+      {/* Universidades */}
+      <div className="sidebar-section">
+        <div className="section-title-row">
+          <div className="section-title">Universidades</div>
+          <IconButton
+            label={showUniversityForm ? 'Fechar formulário' : 'Adicionar universidade'}
+            onClick={() => setShowUniversityForm(v => !v)}
+          >
+            {showUniversityForm ? '−' : '+'}
+          </IconButton>
+        </div>
+
+        {showUniversityForm ? (
+          <UniversityForm
+            loading={universitySaving}
+            onSubmit={handleUniversitySubmit}
+            onCancel={() => setShowUniversityForm(false)}
+          />
+        ) : null}
+
+        <UniversityList
+          universities={universities}
+          loading={universitiesLoading}
+          onDelete={onDeleteUniversity}
+          deletingId={universityDeletingId}
+          error={universityError}
+        />
+      </div>
+
       {/* Alunos */}
       <div className="sidebar-section">
         <div className="section-title-row">
           <div className="section-title">Alunos</div>
           <IconButton
-            label={showForm || editingStudentId ? 'Fechar formulário de aluno' : 'Adicionar aluno'}
+            label={showStudentForm || editingStudentId ? 'Fechar formulário' : 'Adicionar aluno'}
             onClick={() => {
-              setShowForm(current => {
+              setShowStudentForm(current => {
                 if (editingStudentId) {
                   setEditingStudentId(null)
                   return false
@@ -104,17 +157,17 @@ export function Sidebar({
               })
             }}
           >
-            {showForm || editingStudentId ? '−' : '+'}
+            {showStudentForm || editingStudentId ? '−' : '+'}
           </IconButton>
         </div>
 
-        {showForm || editingStudentId ? (
+        {showStudentForm || editingStudentId ? (
           <StudentForm
             universities={universities}
             loading={studentSaving}
             onSubmit={handleStudentSubmit}
             onCancel={() => {
-              setShowForm(false)
+              setShowStudentForm(false)
               setEditingStudentId(null)
             }}
             initialData={editingStudent}
@@ -125,7 +178,7 @@ export function Sidebar({
           students={students}
           loading={studentsLoading}
           onEdit={id => {
-            setShowForm(false)
+            setShowStudentForm(false)
             setEditingStudentId(id)
           }}
           onDelete={onDeleteStudent}
